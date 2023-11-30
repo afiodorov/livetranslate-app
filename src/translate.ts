@@ -17,7 +17,7 @@ export async function translate(
     context: context,
   };
 
-  const url = `http://${DEEPL_PROXY}/v2/translate`;
+  const url = `${DEEPL_PROXY}/v2/translate`;
 
   try {
     const response = await fetch(url, {

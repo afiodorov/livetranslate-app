@@ -47,7 +47,7 @@ export function makeUrl(sourceLanguage: string): string {
   }
 
   const queryString: string = new URLSearchParams(params).toString();
-  const deepgramUrl: string = `ws://${DEEPGRAM_PROXY}/v1/listen?${queryString}`;
+  const deepgramUrl: string = `${DEEPGRAM_PROXY}/v1/listen?${queryString}`;
 
   return deepgramUrl;
 }
