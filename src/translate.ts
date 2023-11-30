@@ -42,16 +42,16 @@ export async function translate(
 
 export const supportedPairs = new Map<string, Array<string | null>>([
   ["de", [null, "en", "es", "fr", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
-  ["en", [null, "de", "es", "fr", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
-  ["es", [null, "de", "en", "fr", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
-  ["fr", [null, "de", "en", "es", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
-  ["it", [null, "de", "en", "es", "fr", "ja", "pl", "nl", "zh", "ru", "pt"]],
-  ["ja", [null, "de", "en", "es", "fr", "it", "pl", "nl", "zh", "ru", "pt"]],
-  ["nl", [null, "de", "en", "es", "fr", "ja", "it", "pl", "zh", "ru", "pt"]],
-  ["pl", [null, "de", "en", "es", "fr", "ja", "it", "nl", "zh", "ru", "pt"]],
-  ["pt", [null, "de", "en", "es", "fr", "ja", "it", "pl", "nl", "zh", "ru"]],
-  ["ru", [null, "de", "en", "es", "fr", "ja", "it", "pl", "nl", "zh", "pt"]],
-  ["zh", [null, "de", "en", "es", "fr", "ja", "it", "pl", "nl", "ru", "pt"]],
+  ["en", [null, "es", "de", "fr", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
+  ["es", [null, "en", "de", "fr", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
+  ["fr", [null, "en", "de", "es", "ja", "it", "pl", "nl", "zh", "ru", "pt"]],
+  ["it", [null, "en", "de", "es", "fr", "ja", "pl", "nl", "zh", "ru", "pt"]],
+  ["ja", [null, "en", "de", "es", "fr", "it", "pl", "nl", "zh", "ru", "pt"]],
+  ["nl", [null, "en", "de", "es", "fr", "ja", "it", "pl", "zh", "ru", "pt"]],
+  ["pl", [null, "en", "de", "es", "fr", "ja", "it", "nl", "zh", "ru", "pt"]],
+  ["pt", [null, "en", "de", "es", "fr", "ja", "it", "pl", "nl", "zh", "ru"]],
+  ["ru", [null, "en", "de", "es", "fr", "ja", "it", "pl", "nl", "zh", "pt"]],
+  ["zh", [null, "en", "de", "es", "fr", "ja", "it", "pl", "nl", "ru", "pt"]],
 ]);
 
 export const displayName = new Map<string | null, string>([

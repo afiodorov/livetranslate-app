@@ -5,7 +5,7 @@ import { ctx, StreamingContext } from "./context";
 import { supportedPairs, displayName, extractCode } from "./translate";
 
 function App() {
-  const [msg, setMsg] = useState("Starting Text");
+  const [msg, setMsg] = useState("...");
   const [sourceLanguage, setSourceLanguage] = useState<string>("es");
   const [targetLanguage, setTargetLanguage] = useState<string>("");
   const [targetOptions, setTargetOptions] = useState<Array<string | null>>([]);
@@ -62,7 +62,7 @@ function App() {
         <button
           onClick={() => startStreaming(sourceLanguage, targetLanguage, setMsg)}
         >
-          Start Listening
+          LiveTranslate 🎤
         </button>
       )}
       <p>{msg}</p>
