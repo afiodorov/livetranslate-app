@@ -37,9 +37,8 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src="logo.jpg" alt="LiveTranslate" />
-        <label htmlFor="language-select">From Language</label>
+      <img src="logo.jpg" alt="LiveTranslate" />
+      <div>
         <select
           id="language-select"
           value={sourceLanguage}
@@ -47,8 +46,7 @@ function App() {
         >
           {languageOptions}
         </select>
-
-        <label htmlFor="target-language-select">To Language</label>
+        <label htmlFor="target-language-select">to</label>
         <select
           id="target-language-select"
           value={targetLanguage}
@@ -56,19 +54,17 @@ function App() {
         >
           {targetLanguageOptions}
         </select>
+      </div>
 
-        {active ? (
-          <button onClick={stopStreaming}>Stop</button>
-        ) : (
-          <button
-            onClick={() =>
-              startStreaming(sourceLanguage, targetLanguage, setMsg)
-            }
-          >
-            Start
-          </button>
-        )}
-      </header>
+      {active ? (
+        <button onClick={stopStreaming}>Stop</button>
+      ) : (
+        <button
+          onClick={() => startStreaming(sourceLanguage, targetLanguage, setMsg)}
+        >
+          Start Listening
+        </button>
+      )}
       <p>{msg}</p>
     </div>
   );

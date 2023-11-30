@@ -55,7 +55,7 @@ export const supportedPairs = new Map<string, Array<string | null>>([
 ]);
 
 export const displayName = new Map<string | null, string>([
-  [null, "Transcribe Only"],
+  [null, "Transcription"],
   ["de", "German"],
   ["en", "English"],
   ["es", "Spanish"],
