@@ -38,7 +38,7 @@
   margin: 0px;
   padding: 5px 10px 5px;
   border: none;
-  width: 1200px;
+  width: 90%;
   font-size: 30px;
   position: absolute;
   bottom: 0px;
@@ -47,6 +47,17 @@
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  /* Adjusts for tablets and below */
+  .App p {
+    font-size: 16px; /* Smaller font size for smaller screens */
+    white-space: normal; /* Allows text wrapping */
+    overflow: visible; /* Shows overflow text */
+    padding: 10px; /* Adjust padding to ensure visibility */
+    line-height: 1.2; /* Adjust line height for better readability */
+  }
 }
 
 .App label {
