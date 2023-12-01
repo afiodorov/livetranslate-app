@@ -70,10 +70,16 @@ export class Transcriber {
     }
 
     const transcript: string = res.channel?.alternatives?.[0]?.transcript ?? "";
+    if (!res.channel) {
+      console.log("Unexpected res", res);
+      return;
+    }
+
     if (!transcript) {
       console.log("No transcript found");
       return;
     }
+
     if (res.is_final) {
       this.contextQueue.enqueue(transcript);
     }
