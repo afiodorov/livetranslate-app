@@ -101,9 +101,6 @@ export class Transcriber {
     let stream;
     const constraints = { video: false, audio: true };
 
-    const deepgramUrl = makeUrl(this.sourceLanguage);
-    this._ws = new WebSocket(deepgramUrl);
-
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints);
     } catch (error) {
@@ -118,6 +115,15 @@ export class Transcriber {
         throw new Error("An unknown error occurred in getUserMedia");
       }
     }
+
+    const deepgramUrl = makeUrl(this.sourceLanguage);
+    this._ws = new WebSocket(deepgramUrl);
+
+    await new Promise((resolve) => {
+      if (this._ws) {
+        this._ws.onopen = resolve;
+      }
+    });
 
     this._recorder = new MediaRecorder(stream);
 

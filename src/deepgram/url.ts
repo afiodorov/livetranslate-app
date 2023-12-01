@@ -6,7 +6,6 @@ export function makeUrl(sourceLanguage: string): string {
     filler_words: "true",
     interim_results: "true",
     language: sourceLanguage,
-    encoding: "opus",
   };
 
   const supportedLanguagesForNova: string[] = [
