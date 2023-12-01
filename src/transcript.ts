@@ -8,7 +8,7 @@ export class Transcriber {
   private sourceLanguage: string;
   private targetLanguage: string | null;
   private setMsg: (msg: string) => void;
-  private setActive: (_: boolean) => void;
+  private clearUp: () => void;
   private queue: AsyncQueue | null = null;
   private contextQueue = new FixedSizeQueue<string>();
 
@@ -24,12 +24,12 @@ export class Transcriber {
     sourceLanguage: string,
     targetLanguage: string,
     setMsg: (msg: string) => void,
-    setActive: (_: boolean) => void
+    clearUp: () => void
   ) {
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage || null;
     this.setMsg = setMsg;
-    this.setActive = setActive;
+    this.clearUp = clearUp;
 
     if (this.targetLanguage) {
       this.queue = new AsyncQueue();
@@ -173,6 +173,6 @@ export class Transcriber {
 
     this.contextQueue.clear();
 
-    this.setActive(false);
+    this.clearUp();
   }
 }

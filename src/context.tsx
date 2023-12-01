@@ -33,7 +33,10 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
         sourceLanguage,
         targetLanguage,
         setMsg,
-        setActive
+        () => {
+          setTranscriber(null);
+          setActive(false);
+        }
       );
       setTranscriber(newTranscriber);
       newTranscriber.start();
