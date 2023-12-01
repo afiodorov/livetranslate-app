@@ -10,6 +10,7 @@ export class Transcriber {
   private setMsg: (msg: string) => void;
   private queue: AsyncQueue | null = null;
   private contextQueue = new FixedSizeQueue<string>();
+  public stopped: boolean = false;
 
   private _recorder: MediaRecorder | null;
   private _ws: WebSocket | null;
@@ -44,9 +45,11 @@ export class Transcriber {
   }
 
   onClose(_: Event) {
-    this.stop();
+    this.clearForRestart();
     console.log("WebSocket connection closed: restarting");
-    this.start();
+    if (!this.stopped) {
+      this.start();
+    }
   }
 
   onError(event: Event) {
@@ -143,7 +146,7 @@ export class Transcriber {
     this._recorder.start(1_000);
   }
 
-  stop() {
+  clearForRestart() {
     if (this._ws) {
       this._ws.removeEventListener("message", this.onMessageHandler);
       this._ws.removeEventListener("error", this.onErrorHandler);

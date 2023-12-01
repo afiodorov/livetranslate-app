@@ -42,7 +42,8 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
 
   const stopStreaming = () => {
     if (transcriber) {
-      transcriber.stop();
+      transcriber.stopped = true;
+      transcriber.clearForRestart();
       setTranscriber(null);
       setActive(false);
     }
