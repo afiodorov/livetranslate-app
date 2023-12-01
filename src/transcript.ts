@@ -20,6 +20,8 @@ export class Transcriber {
   private onErrorHandler: (_: Event) => void;
   private onCloseHandler: (_: Event) => void;
 
+  private lag: number;
+
   constructor(
     sourceLanguage: string,
     targetLanguage: string,
@@ -36,6 +38,7 @@ export class Transcriber {
     this.onMessageHandler = this.onMessage.bind(this);
     this.onErrorHandler = this.onError.bind(this);
     this.onCloseHandler = this.onClose.bind(this);
+    this.lag = 100; // start with 100ms lag
   }
 
   onDataAvailable(event: BlobEvent) {
@@ -45,6 +48,12 @@ export class Transcriber {
   }
 
   onClose(_: Event) {
+    if (this.lag < 1_000) {
+      this.lag = 1_000;
+    } else if (this.lag < 1_500) {
+      this.lag = 1_500;
+    }
+
     this.clearForRestart();
     console.log("WebSocket connection closed: restarting");
     if (!this.stopped) {
@@ -143,7 +152,7 @@ export class Transcriber {
     this._ws.onerror = this.onErrorHandler;
     this._ws.onclose = this.onCloseHandler;
 
-    this._recorder.start(1_000);
+    this._recorder.start(this.lag);
   }
 
   clearForRestart() {
