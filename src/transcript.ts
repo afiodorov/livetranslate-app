@@ -142,7 +142,7 @@ export class Transcriber {
     this._ws.onerror = this.onErrorHandler;
     this._ws.onclose = this.onCloseHandler;
 
-    this._recorder.start(100);
+    this._recorder.start(500);
   }
 
   stop() {
