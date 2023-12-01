@@ -8,7 +8,6 @@ export class Transcriber {
   private sourceLanguage: string;
   private targetLanguage: string | null;
   private setMsg: (msg: string) => void;
-  private clearUp: () => void;
   private queue: AsyncQueue | null = null;
   private contextQueue = new FixedSizeQueue<string>();
 
@@ -23,17 +22,11 @@ export class Transcriber {
   constructor(
     sourceLanguage: string,
     targetLanguage: string,
-    setMsg: (msg: string) => void,
-    clearUp: () => void
+    setMsg: (msg: string) => void
   ) {
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage || null;
     this.setMsg = setMsg;
-    this.clearUp = clearUp;
-
-    if (this.targetLanguage) {
-      this.queue = new AsyncQueue();
-    }
 
     this._recorder = null;
     this._ws = null;
@@ -52,7 +45,8 @@ export class Transcriber {
 
   onClose(_: Event) {
     this.stop();
-    console.log("WebSocket connection closed");
+    console.log("WebSocket connection closed: restarting");
+    this.start();
   }
 
   onError(event: Event) {
@@ -106,6 +100,10 @@ export class Transcriber {
   async start() {
     let stream;
     const constraints = { video: false, audio: true };
+
+    if (this.targetLanguage) {
+      this.queue = new AsyncQueue();
+    }
 
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -172,7 +170,5 @@ export class Transcriber {
     }
 
     this.contextQueue.clear();
-
-    this.clearUp();
   }
 }
