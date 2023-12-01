@@ -48,15 +48,16 @@ export class Transcriber {
   }
 
   onClose(_: Event) {
-    if (this.lag < 1_000) {
-      this.lag = 1_000;
-    } else if (this.lag < 1_500) {
-      this.lag = 1_500;
-    }
-
     this.clearForRestart();
-    console.log("WebSocket connection closed: restarting");
+    console.log("WebSocket connection closed");
     if (!this.stopped) {
+      console.log("restarting");
+      if (this.lag < 1_000) {
+        this.lag = 1_000;
+      } else if (this.lag < 1_500) {
+        this.lag = 1_500;
+      }
+
       this.start();
     }
   }
