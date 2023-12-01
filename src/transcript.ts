@@ -71,7 +71,7 @@ export class Transcriber {
 
     const transcript: string = res.channel?.alternatives?.[0]?.transcript ?? "";
     if (!res.channel) {
-      console.log("Unexpected res", res);
+      console.log("Unexpected res", JSON.stringify(res));
       return;
     }
 
@@ -142,7 +142,7 @@ export class Transcriber {
     this._ws.onerror = this.onErrorHandler;
     this._ws.onclose = this.onCloseHandler;
 
-    this._recorder.start(500);
+    this._recorder.start(1_000);
   }
 
   stop() {
