@@ -31,7 +31,7 @@
 }
 
 .App p {
-  color: #ffff00; /* Dark yellow */
+  color: darkgoldenrod;
   background-color: black;
   padding: 5px;
   border-radius: 10px;
@@ -78,4 +78,20 @@
 
 .App select {
   padding: 4px;
+}
+
+.fullScreenDiv {
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+}
+
+.fullScreenText {
+  color: darkgoldenrod;
+  font-size: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
 }

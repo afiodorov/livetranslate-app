@@ -1,10 +1,12 @@
 import "./App.css";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { supportedLanguages } from "./deepgram/url";
 import { ctx, StreamingContext } from "./context";
 import { supportedPairs, displayName, extractCode } from "./translate";
 
 function App() {
+  const appRef = useRef<HTMLDivElement>(null);
+
   const [msg, setMsg] = useState("...");
   const [sourceLanguage, setSourceLanguage] = useState<string>("es");
   const [targetLanguage, setTargetLanguage] = useState<string>("");
@@ -12,6 +14,16 @@ function App() {
   const { startStreaming, stopStreaming, active } = useContext(
     StreamingContext
   ) as ctx;
+
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreenSupported, setIsFullScreenSupported] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    setIsFullScreenSupported(
+      document?.documentElement?.requestFullscreen !== undefined
+    );
+  }, []);
 
   // Update target options when source language changes
   useEffect(() => {
@@ -35,6 +47,21 @@ function App() {
     </option>
   ));
 
+  const handleFullScreenChange = () => {
+    const isCurrentlyFullScreen = document.fullscreenElement === appRef.current;
+    setIsFullScreen(isCurrentlyFullScreen);
+  };
+
+  const goFullScreen = () => {
+    if (appRef.current) {
+      if (appRef.current.requestFullscreen) {
+        setIsFullScreen(true);
+        appRef.current.requestFullscreen();
+      }
+
+      document.addEventListener("fullscreenchange", handleFullScreenChange);
+    }
+  };
   return (
     <div className="App">
       <img src="logo.jpg" alt="LiveTranslate" />
@@ -65,6 +92,16 @@ function App() {
           LiveTranslate 🎤
         </button>
       )}
+      {isFullScreenSupported && (
+        <button onClick={goFullScreen}>Go Fullscreen</button>
+      )}
+      <div
+        ref={appRef}
+        style={{ display: isFullScreen ? "block" : "none" }}
+        className={isFullScreen ? "fullScreenDiv" : ""}
+      >
+        <span className="fullScreenText">{msg}</span>
+      </div>
       <p>{msg}</p>
     </div>
   );
