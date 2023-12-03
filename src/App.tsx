@@ -1,31 +1,16 @@
 import "./App.css";
-import { useContext, useState, useEffect, useRef } from "react";
+import { useContext, useState, useEffect } from "react";
 import { supportedLanguages } from "./deepgram/url";
 import { ctx, StreamingContext } from "./context";
 import { supportedPairs, displayName, extractCode } from "./translate";
-import { ScreenManager } from "./fullscreen";
 
 function App() {
-  const appRef = useRef<HTMLDivElement>(null);
-
   const [msg, setMsg] = useState("...");
   const [sourceLanguage, setSourceLanguage] = useState<string>("es");
   const [targetLanguage, setTargetLanguage] = useState<string>("");
   const [targetOptions, setTargetOptions] = useState<Array<string | null>>([]);
-  const { startStreaming, stopStreaming, active } = useContext(
-    StreamingContext
-  ) as ctx;
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
-  const [isFullScreenSupported, setIsFullScreenSupported] =
-    useState<boolean>(false);
-
-  const screenManager = new ScreenManager(
-    appRef,
-    isFullScreen,
-    setIsFullScreen,
-    isFullScreenSupported,
-    setIsFullScreenSupported
-  );
+  const { startStreaming, stopStreaming, active, screenManager, appRef } =
+    useContext(StreamingContext) as ctx;
 
   useEffect(() => {
     screenManager.setIsFullScreenSupported(

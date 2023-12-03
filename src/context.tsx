@@ -1,5 +1,6 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useRef, RefObject } from "react";
 import { Transcriber } from "./transcript";
+import { ScreenManager } from "./fullscreen";
 
 interface Props {
   children: React.ReactNode;
@@ -15,6 +16,9 @@ export type ctx = {
     setMsg: (_: string) => void
   ) => void;
   stopStreaming: () => void;
+
+  screenManager: ScreenManager;
+  appRef: RefObject<HTMLDivElement>;
 };
 
 export const StreamingContext = createContext<ctx | null>(null);
@@ -49,9 +53,30 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [isFullScreenSupported, setIsFullScreenSupported] =
+    useState<boolean>(false);
+
+  const appRef = useRef<HTMLDivElement>(null);
+
+  const screenManager = new ScreenManager(
+    appRef,
+    isFullScreen,
+    setIsFullScreen,
+    isFullScreenSupported,
+    setIsFullScreenSupported
+  );
+
   return (
     <StreamingContext.Provider
-      value={{ startStreaming, stopStreaming, active, setActive }}
+      value={{
+        startStreaming,
+        stopStreaming,
+        active,
+        setActive,
+        screenManager,
+        appRef,
+      }}
     >
       {children}
     </StreamingContext.Provider>

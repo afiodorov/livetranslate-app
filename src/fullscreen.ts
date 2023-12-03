@@ -1,4 +1,4 @@
-import { RefObject, useState } from "react";
+import { RefObject } from "react";
 export class ScreenManager {
   private wakeLock: WakeLockSentinel | null = null;
   private isFullScreenChangeListenerAdded = false;
