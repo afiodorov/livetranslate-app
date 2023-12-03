@@ -3,6 +3,7 @@ import { useContext, useState, useEffect, useRef } from "react";
 import { supportedLanguages } from "./deepgram/url";
 import { ctx, StreamingContext } from "./context";
 import { supportedPairs, displayName, extractCode } from "./translate";
+import { ScreenManager } from "./fullscreen";
 
 function App() {
   const appRef = useRef<HTMLDivElement>(null);
@@ -14,13 +15,20 @@ function App() {
   const { startStreaming, stopStreaming, active } = useContext(
     StreamingContext
   ) as ctx;
-
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const [isFullScreenSupported, setIsFullScreenSupported] =
     useState<boolean>(false);
 
+  const screenManager = new ScreenManager(
+    appRef,
+    isFullScreen,
+    setIsFullScreen,
+    isFullScreenSupported,
+    setIsFullScreenSupported
+  );
+
   useEffect(() => {
-    setIsFullScreenSupported(
+    screenManager.setIsFullScreenSupported(
       document?.documentElement?.requestFullscreen !== undefined
     );
   }, []);
@@ -47,21 +55,6 @@ function App() {
     </option>
   ));
 
-  const handleFullScreenChange = () => {
-    const isCurrentlyFullScreen = document.fullscreenElement === appRef.current;
-    setIsFullScreen(isCurrentlyFullScreen);
-  };
-
-  const goFullScreen = () => {
-    if (appRef.current) {
-      if (appRef.current.requestFullscreen) {
-        setIsFullScreen(true);
-        appRef.current.requestFullscreen();
-      }
-
-      document.addEventListener("fullscreenchange", handleFullScreenChange);
-    }
-  };
   return (
     <div className="App">
       <img src="logo.jpg" alt="LiveTranslate" />
@@ -92,13 +85,13 @@ function App() {
           LiveTranslate 🎤
         </button>
       )}
-      {isFullScreenSupported && (
-        <button onClick={goFullScreen}>Go Fullscreen</button>
+      {screenManager.isFullScreenSupported && (
+        <button onClick={screenManager.goFullScreen}>Go Fullscreen</button>
       )}
       <div
         ref={appRef}
-        style={{ display: isFullScreen ? "block" : "none" }}
-        className={isFullScreen ? "fullScreenDiv" : ""}
+        style={{ display: screenManager.isFullScreen ? "block" : "none" }}
+        className={screenManager.isFullScreen ? "fullScreenDiv" : ""}
       >
         <span className="fullScreenText">{msg}</span>
       </div>
