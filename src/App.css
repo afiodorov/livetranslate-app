@@ -30,7 +30,26 @@
   margin: 5px;
 }
 
-.App p {
+.sub-top {
+  color: darkgoldenrod;
+  background-color: black;
+  padding: 5px;
+  border-radius: 10px;
+  margin: 0px;
+  padding: 5px 10px 5px;
+  border: none;
+  width: 90%;
+  font-size: 30px;
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%); /* Adjust for the center alignment */
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sub-bottom {
   color: darkgoldenrod;
   background-color: black;
   padding: 5px;
@@ -81,18 +100,24 @@
 }
 
 .fullScreenDiv {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: black;
   cursor: none;
+  width: 100vw;
+  height: 100vh;
 }
 
 .fullScreenText {
-  color: darkgoldenrod;
-  font-size: 100px;
   display: flex;
+  color: darkgoldenrod;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  font-size: 100px;
   text-align: center;
+  padding: 10px; /* Optional: Adds some space around the text */
+  width: 100%;
+  flex: 1;
 }

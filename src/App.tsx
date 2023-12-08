@@ -1,16 +1,24 @@
 import "./App.css";
 import { useContext, useState, useEffect } from "react";
-import { supportedLanguages } from "./deepgram/url";
 import { ctx, StreamingContext } from "./context";
-import { supportedPairs, displayName, extractCode } from "./translate";
+import LanguageSelector from "./selector";
 
 function App() {
   const [msg, setMsg] = useState("...");
+  const [msg2, setMsg2] = useState("...");
   const [sourceLanguage, setSourceLanguage] = useState<string>("es");
   const [targetLanguage, setTargetLanguage] = useState<string>("");
-  const [targetOptions, setTargetOptions] = useState<Array<string | null>>([]);
-  const { startStreaming, stopStreaming, active, screenManager, appRef } =
-    useContext(StreamingContext) as ctx;
+  const [sourceLanguage2, setSourceLanguage2] = useState<string>("es");
+  const [targetLanguage2, setTargetLanguage2] = useState<string>("");
+  const {
+    startStreaming,
+    stopStreaming,
+    active,
+    screenManager,
+    appRef,
+    speakerAdded,
+    setSpeakerAdded,
+  } = useContext(StreamingContext) as ctx;
 
   useEffect(() => {
     screenManager.setIsFullScreenSupported(
@@ -18,53 +26,41 @@ function App() {
     );
   }, []);
 
-  useEffect(() => {
-    const targets = supportedPairs.get(extractCode(sourceLanguage)) || [null];
-    setTargetOptions(targets);
-    setTargetLanguage(targets[0] || "");
-  }, [sourceLanguage]);
-
-  const languageOptions = Array.from(supportedLanguages.entries()).map(
-    ([code, name]) => (
-      <option key={code} value={code}>
-        {name}
-      </option>
-    )
-  );
-
-  // Create language options for the target language dropdown
-  const targetLanguageOptions = targetOptions.map((code) => (
-    <option key={code} value={code || ""}>
-      {displayName.get(code)}
-    </option>
-  ));
-
   return (
     <div className="App">
       <img src="logo.jpg" alt="LiveTranslate" />
-      <div>
-        <select
-          id="language-select"
-          value={sourceLanguage}
-          onChange={(e) => setSourceLanguage(e.target.value)}
-        >
-          {languageOptions}
-        </select>
-        <label htmlFor="target-language-select">to</label>
-        <select
-          id="target-language-select"
-          value={targetLanguage}
-          onChange={(e) => setTargetLanguage(e.target.value)}
-        >
-          {targetLanguageOptions}
-        </select>
-      </div>
+      <LanguageSelector
+        sourceLanguage={sourceLanguage}
+        setSourceLanguage={setSourceLanguage}
+        targetLanguage={targetLanguage}
+        setTargetLanguage={setTargetLanguage}
+      />
+
+      {speakerAdded && (
+        <div style={{ margin: "8px" }}>
+          <LanguageSelector
+            sourceLanguage={sourceLanguage2}
+            setSourceLanguage={setSourceLanguage2}
+            targetLanguage={targetLanguage2}
+            setTargetLanguage={setTargetLanguage2}
+          />
+        </div>
+      )}
 
       {active ? (
         <button onClick={stopStreaming}>Stop</button>
       ) : (
         <button
-          onClick={() => startStreaming(sourceLanguage, targetLanguage, setMsg)}
+          onClick={() =>
+            startStreaming(
+              sourceLanguage,
+              targetLanguage,
+              setMsg,
+              sourceLanguage2,
+              targetLanguage2,
+              setMsg2
+            )
+          }
         >
           LiveTranslate 🎤
         </button>
@@ -72,14 +68,25 @@ function App() {
       {screenManager.isFullScreenSupported && (
         <button onClick={screenManager.goFullScreen}>Go Fullscreen</button>
       )}
+      {speakerAdded ? (
+        <button onClick={() => setSpeakerAdded(false)} disabled={active}>
+          Remove Speaker
+        </button>
+      ) : (
+        <button onClick={() => setSpeakerAdded(true)} disabled={active}>
+          Add Speaker
+        </button>
+      )}
       <div
         ref={appRef}
-        style={{ display: screenManager.isFullScreen ? "block" : "none" }}
+        style={{ display: screenManager.isFullScreen ? "flex" : "none" }}
         className={screenManager.isFullScreen ? "fullScreenDiv" : ""}
       >
+        {speakerAdded && <span className="fullScreenText">{msg2}</span>}
         <span className="fullScreenText">{msg}</span>
       </div>
-      <p>{msg}</p>
+      {speakerAdded && <p className="sub-top">{msg2}</p>}
+      <p className="sub-bottom">{msg}</p>
     </div>
   );
 }

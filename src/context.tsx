@@ -13,25 +13,39 @@ export type ctx = {
   startStreaming: (
     sourceLang: string,
     targetLang: string,
-    setMsg: (_: string) => void
+    setMsg: (_: string) => void,
+    sourceLang2: string,
+    targetLang2: string,
+    setMsg2: (_: string) => void
   ) => void;
   stopStreaming: () => void;
 
   screenManager: ScreenManager;
   appRef: RefObject<HTMLDivElement>;
+
+  speakerAdded: boolean;
+  setSpeakerAdded: (_: boolean) => void;
 };
 
 export const StreamingContext = createContext<ctx | null>(null);
 
 export const StreamingProvider: React.FC<Props> = ({ children }) => {
   const [transcriber, setTranscriber] = useState<Transcriber | null>(null);
-  const [active, setActive] = useState(false);
+  const [transcriber2, setTranscriber2] = useState<Transcriber | null>(null);
+  const [active, setActive] = useState<boolean>(false);
+  const [speakerAdded, setSpeakerAdded] = useState<boolean>(false);
 
   const startStreaming = (
     sourceLanguage: string,
     targetLanguage: string,
-    setMsg: (_: string) => void
+    setMsg: (_: string) => void,
+    sourceLanguage2: string,
+    targetLanguage2: string,
+    setMsg2: (_: string) => void
   ) => {
+    if (active) {
+      return;
+    }
     if (!transcriber) {
       const newTranscriber = new Transcriber(
         sourceLanguage,
@@ -40,8 +54,19 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
       );
       setTranscriber(newTranscriber);
       newTranscriber.start();
-      setActive(true);
     }
+
+    if (speakerAdded && !transcriber2) {
+      const newTranscriber = new Transcriber(
+        sourceLanguage2,
+        targetLanguage2,
+        setMsg2
+      );
+      setTranscriber2(newTranscriber);
+      newTranscriber.start();
+    }
+
+    setActive(true);
   };
 
   const stopStreaming = () => {
@@ -49,8 +74,15 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
       transcriber.stopped = true;
       transcriber.clearForRestart();
       setTranscriber(null);
-      setActive(false);
     }
+
+    if (transcriber2) {
+      transcriber2.stopped = true;
+      transcriber2.clearForRestart();
+      setTranscriber2(null);
+    }
+
+    setActive(false);
   };
 
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
@@ -76,6 +108,8 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
         setActive,
         screenManager,
         appRef,
+        speakerAdded,
+        setSpeakerAdded,
       }}
     >
       {children}
