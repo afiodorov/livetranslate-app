@@ -18,11 +18,10 @@ function App() {
     );
   }, []);
 
-  // Update target options when source language changes
   useEffect(() => {
     const targets = supportedPairs.get(extractCode(sourceLanguage)) || [null];
     setTargetOptions(targets);
-    setTargetLanguage(targets[0] || ""); // Set default target language
+    setTargetLanguage(targets[0] || "");
   }, [sourceLanguage]);
 
   const languageOptions = Array.from(supportedLanguages.entries()).map(
