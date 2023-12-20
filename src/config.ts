@@ -1,2 +1,2 @@
-export const DEEPGRAM_PROXY = "wss://livetranslate.net:444";
-export const DEEPL_PROXY = "https://livetranslate.net:445";
+export const DEEPGRAM_PROXY = "wss://transcribe.livetranslate.net";
+export const DEEPL_PROXY = "https://translate.livetranslate.net/api";

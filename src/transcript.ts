@@ -22,10 +22,17 @@ export class Transcriber {
 
   private lag: number;
 
+  private deepgramToken: string;
+  private deeplToken: string;
+  private useDeepLPro: boolean;
+
   constructor(
     sourceLanguage: string,
     targetLanguage: string,
-    setMsg: (msg: string) => void
+    setMsg: (msg: string) => void,
+    deepgramToken: string,
+    deeplToken: string,
+    useDeepLPro: boolean
   ) {
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage || null;
@@ -39,6 +46,10 @@ export class Transcriber {
     this.onErrorHandler = this.onError.bind(this);
     this.onCloseHandler = this.onClose.bind(this);
     this.lag = 100; // start with 100ms lag
+
+    this.deepgramToken = deepgramToken;
+    this.deeplToken = deeplToken;
+    this.useDeepLPro = useDeepLPro;
   }
 
   onDataAvailable(event: BlobEvent) {
@@ -99,7 +110,9 @@ export class Transcriber {
           transcript,
           extractCode(this.sourceLanguage),
           targetLang,
-          this.contextQueue.toArray().join(" ")
+          this.contextQueue.toArray().join(" "),
+          this.deeplToken,
+          this.useDeepLPro
         );
         if (translation) {
           this.setMsg(translation);
@@ -133,7 +146,7 @@ export class Transcriber {
       }
     }
 
-    const deepgramUrl = makeUrl(this.sourceLanguage);
+    const deepgramUrl = makeUrl(this.sourceLanguage, this.deepgramToken);
     this._ws = new WebSocket(deepgramUrl);
 
     await new Promise((resolve) => {

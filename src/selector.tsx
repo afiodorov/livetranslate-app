@@ -7,6 +7,7 @@ type LanguageSelectorProps = {
   setSourceLanguage: (language: string) => void;
   targetLanguage: string;
   setTargetLanguage: (language: string) => void;
+  deeplToken: string;
 };
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
@@ -14,14 +15,19 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   setSourceLanguage,
   targetLanguage,
   setTargetLanguage,
+  deeplToken,
 }) => {
   const [targetOptions, setTargetOptions] = useState<Array<string | null>>([]);
 
   useEffect(() => {
-    const targets = supportedPairs.get(extractCode(sourceLanguage)) || [null];
+    let targets = supportedPairs.get(extractCode(sourceLanguage)) || [null];
+    if (!deeplToken) {
+      targets = [null];
+    }
+
     setTargetOptions(targets);
     setTargetLanguage(targets[0] || "");
-  }, [sourceLanguage, setTargetLanguage]);
+  }, [sourceLanguage, setTargetLanguage, deeplToken]);
 
   const languageOptions = Array.from(supportedLanguages.entries()).map(
     ([code, name]) => (

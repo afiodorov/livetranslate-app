@@ -16,7 +16,10 @@ export type ctx = {
     setMsg: (_: string) => void,
     sourceLang2: string,
     targetLang2: string,
-    setMsg2: (_: string) => void
+    setMsg2: (_: string) => void,
+    deepgramToken: string,
+    deeplToken: string,
+    useDeepLPro: boolean
   ) => void;
   stopStreaming: () => void;
 
@@ -25,6 +28,16 @@ export type ctx = {
 
   speakerAdded: boolean;
   setSpeakerAdded: (_: boolean) => void;
+
+  settingsShown: boolean;
+  setSettingsShown: (_: boolean) => void;
+
+  deeplToken: string;
+  setDeepLToken: (token: string) => void;
+  deepgramToken: string;
+  setDeepgramToken: (token: string) => void;
+  useDeepLPro: boolean;
+  setUseDeepLPro: (usePro: boolean) => void;
 };
 
 export const StreamingContext = createContext<ctx | null>(null);
@@ -34,6 +47,11 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
   const [transcriber2, setTranscriber2] = useState<Transcriber | null>(null);
   const [active, setActive] = useState<boolean>(false);
   const [speakerAdded, setSpeakerAdded] = useState<boolean>(false);
+  const [settingsShown, setSettingsShown] = useState<boolean>(false);
+
+  const [deeplToken, setDeepLToken] = useState("");
+  const [deepgramToken, setDeepgramToken] = useState("");
+  const [useDeepLPro, setUseDeepLPro] = useState(false);
 
   const startStreaming = (
     sourceLanguage: string,
@@ -41,7 +59,10 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
     setMsg: (_: string) => void,
     sourceLanguage2: string,
     targetLanguage2: string,
-    setMsg2: (_: string) => void
+    setMsg2: (_: string) => void,
+    deepgramToken: string,
+    deeplToken: string,
+    useDeepLPro: boolean
   ) => {
     if (active) {
       return;
@@ -50,7 +71,10 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
       const newTranscriber = new Transcriber(
         sourceLanguage,
         targetLanguage,
-        setMsg
+        setMsg,
+        deepgramToken,
+        deeplToken,
+        useDeepLPro
       );
       setTranscriber(newTranscriber);
       newTranscriber.start();
@@ -60,7 +84,10 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
       const newTranscriber = new Transcriber(
         sourceLanguage2,
         targetLanguage2,
-        setMsg2
+        setMsg2,
+        deepgramToken,
+        deeplToken,
+        useDeepLPro
       );
       setTranscriber2(newTranscriber);
       newTranscriber.start();
@@ -110,6 +137,14 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
         appRef,
         speakerAdded,
         setSpeakerAdded,
+        settingsShown,
+        setSettingsShown,
+        deeplToken,
+        setDeepLToken,
+        deepgramToken,
+        setDeepgramToken,
+        useDeepLPro,
+        setUseDeepLPro,
       }}
     >
       {children}

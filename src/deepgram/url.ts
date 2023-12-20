@@ -1,11 +1,12 @@
 import { DEEPGRAM_PROXY } from "../config";
 
-export function makeUrl(sourceLanguage: string): string {
+export function makeUrl(sourceLanguage: string, apiKey: string): string {
   let params: { [key: string]: string } = {
     punctuate: "true",
     filler_words: "true",
     interim_results: "true",
     language: sourceLanguage,
+    __apiKey: apiKey,
   };
 
   const supportedLanguagesForNova: string[] = [

@@ -2,6 +2,7 @@ import "./App.css";
 import { useContext, useState, useEffect } from "react";
 import { ctx, StreamingContext } from "./context";
 import LanguageSelector from "./selector";
+import { SettingsForm, useInit } from "./settings";
 
 function App() {
   const [msg, setMsg] = useState("...");
@@ -18,13 +19,23 @@ function App() {
     appRef,
     speakerAdded,
     setSpeakerAdded,
+    settingsShown,
+    setSettingsShown,
+    deeplToken,
+    setDeepLToken,
+    deepgramToken,
+    setDeepgramToken,
+    useDeepLPro,
+    setUseDeepLPro,
   } = useContext(StreamingContext) as ctx;
 
   useEffect(() => {
     screenManager.setIsFullScreenSupported(
       document?.documentElement?.requestFullscreen !== undefined
     );
-  }, []);
+  }, [screenManager]);
+
+  useInit(setDeepLToken, setDeepgramToken, setUseDeepLPro);
 
   return (
     <div className="App">
@@ -34,6 +45,7 @@ function App() {
         setSourceLanguage={setSourceLanguage}
         targetLanguage={targetLanguage}
         setTargetLanguage={setTargetLanguage}
+        deeplToken={deeplToken}
       />
 
       {speakerAdded && (
@@ -43,6 +55,7 @@ function App() {
             setSourceLanguage={setSourceLanguage2}
             targetLanguage={targetLanguage2}
             setTargetLanguage={setTargetLanguage2}
+            deeplToken={deeplToken}
           />
         </div>
       )}
@@ -58,25 +71,32 @@ function App() {
               setMsg,
               sourceLanguage2,
               targetLanguage2,
-              setMsg2
+              setMsg2,
+              deepgramToken,
+              deeplToken,
+              useDeepLPro
             )
           }
+          disabled={!deepgramToken}
         >
           LiveTranslate 🎤
         </button>
       )}
       {screenManager.isFullScreenSupported && (
-        <button onClick={screenManager.goFullScreen}>Go Fullscreen</button>
+        <button onClick={screenManager.goFullScreen}>Fullscreen ⛶</button>
       )}
       {speakerAdded ? (
         <button onClick={() => setSpeakerAdded(false)} disabled={active}>
-          Remove Speaker
+          Remove Speaker 🧑
         </button>
       ) : (
         <button onClick={() => setSpeakerAdded(true)} disabled={active}>
-          Add Speaker
+          Add Speaker 🧑
         </button>
       )}
+      <button onClick={() => setSettingsShown(!settingsShown)}>
+        Settings ⚙️
+      </button>
       <div
         ref={appRef}
         style={{ display: screenManager.isFullScreen ? "flex" : "none" }}
@@ -85,6 +105,16 @@ function App() {
         {speakerAdded && <span className="fullScreenText">{msg2}</span>}
         <span className="fullScreenText">{msg}</span>
       </div>
+      {settingsShown && (
+        <SettingsForm
+          deeplToken={deeplToken}
+          setDeepLToken={setDeepLToken}
+          deepgramToken={deepgramToken}
+          setDeepgramToken={setDeepgramToken}
+          useDeepLPro={useDeepLPro}
+          setUseDeepLPro={setUseDeepLPro}
+        />
+      )}
       {speakerAdded && <p className="sub-top">{msg2}</p>}
       <p className="sub-bottom">{msg}</p>
     </div>

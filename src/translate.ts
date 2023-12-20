@@ -8,13 +8,17 @@ export async function translate(
   text: string,
   sourceLang: string,
   targetLang: string,
-  context: string
+  context: string,
+  apiKey: string,
+  usePro: boolean
 ): Promise<string> {
   const payload = {
     text: [text],
     source_lang: sourceLang,
     target_lang: targetLang,
     context: context,
+    __apiKey: apiKey,
+    __usePro: usePro,
   };
 
   const url = DEEPL_PROXY;
