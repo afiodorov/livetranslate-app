@@ -147,7 +147,7 @@ export class Transcriber {
     }
 
     const deepgramUrl = makeUrl(this.sourceLanguage, this.deepgramToken);
-    this._ws = new WebSocket(deepgramUrl);
+    this._ws = new WebSocket(deepgramUrl, ["token", this.deepgramToken]);
 
     await new Promise((resolve) => {
       if (this._ws) {
