@@ -30,9 +30,8 @@ function App() {
   } = useContext(StreamingContext) as ctx;
 
   useEffect(() => {
-    screenManager.setIsFullScreenSupported(
-      document?.documentElement?.requestFullscreen !== undefined
-    );
+    // Always enable fullscreen button regardless of device
+    screenManager.setIsFullScreenSupported(true);
   }, [screenManager]);
 
   useInit(setDeepLToken, setDeepgramToken, setUseDeepLPro);
@@ -61,7 +60,12 @@ function App() {
       )}
 
       {active ? (
-        <button onClick={stopStreaming}>Stop</button>
+        <button onClick={() => {
+          stopStreaming();
+          // Reset message displays after stopping
+          setMsg("...");
+          setMsg2("...");
+        }}>Stop</button>
       ) : (
         <button
           onClick={() =>
@@ -83,7 +87,7 @@ function App() {
         </button>
       )}
       {screenManager.isFullScreenSupported && (
-        <button onClick={screenManager.goFullScreen}>Fullscreen ⛶</button>
+        <button onClick={screenManager.goFullScreen} className="fullscreen-button">Fullscreen ⛶</button>
       )}
       {speakerAdded ? (
         <button onClick={() => setSpeakerAdded(false)} disabled={active}>
@@ -102,8 +106,8 @@ function App() {
         style={{ display: screenManager.isFullScreen ? "flex" : "none" }}
         className={screenManager.isFullScreen ? "fullScreenDiv" : ""}
       >
-        {speakerAdded && <span className="fullScreenText">{msg2}</span>}
-        <span className="fullScreenText">{msg}</span>
+        {speakerAdded && <span className="fullScreenText">{screenManager.isFullScreen ? msg2 : ""}</span>}
+        <span className="fullScreenText">{screenManager.isFullScreen ? msg : ""}</span>
       </div>
       {settingsShown && (
         <SettingsForm
