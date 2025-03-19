@@ -10,7 +10,7 @@ export async function translate(
   targetLang: string,
   context: string,
   apiKey: string,
-  usePro: boolean
+  usePro: boolean,
 ): Promise<string> {
   const payload = {
     text: [text],

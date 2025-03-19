@@ -1,4 +1,5 @@
 import { RefObject } from "react";
+
 export class ScreenManager {
   private wakeLock: WakeLockSentinel | null = null;
   private isFullScreenChangeListenerAdded = false;
@@ -13,12 +14,43 @@ export class ScreenManager {
     isFullScreen: boolean,
     setIsFullScreen: (_: boolean) => void,
     isFullScreenSupported: boolean,
-    setIsFullScreenSupported: (_: boolean) => void
+    setIsFullScreenSupported: (_: boolean) => void,
   ) {
     this.isFullScreen = isFullScreen;
     this.setIsFullScreen = setIsFullScreen;
-    this.isFullScreenSupported = isFullScreenSupported;
+    this.isFullScreenSupported = true; // Force enable for all devices
     this.setIsFullScreenSupported = setIsFullScreenSupported;
+  }
+
+  // Detect if device is mobile (phone)
+  isMobileDevice(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  }
+
+  // Set screen orientation to landscape if mobile
+  async setLandscapeOrientation() {
+    if (this.isMobileDevice() && window.screen && window.screen.orientation) {
+      try {
+        await window.screen.orientation.lock("landscape");
+        console.log("Screen orientation locked to landscape");
+      } catch (err) {
+        console.error(`Failed to lock orientation: ${err}`);
+      }
+    }
+  }
+
+  // Reset screen orientation
+  async resetOrientation() {
+    if (this.isMobileDevice() && window.screen && window.screen.orientation) {
+      try {
+        await window.screen.orientation.unlock();
+        console.log("Screen orientation unlocked");
+      } catch (err) {
+        console.error(`Failed to unlock orientation: ${err}`);
+      }
+    }
   }
 
   async requestWakeLock() {
@@ -47,30 +79,73 @@ export class ScreenManager {
   };
 
   handleFullScreenChange = async () => {
-    const isCurrentlyFullScreen =
-      document.fullscreenElement === this.appRef.current;
-    this.setIsFullScreen(isCurrentlyFullScreen);
+    // Detect iOS devices
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
-    if (isCurrentlyFullScreen) {
-      await this.requestWakeLock();
-      document.addEventListener("visibilitychange", this.wakeLockListener);
-    } else {
-      document.removeEventListener("visibilitychange", this.wakeLockListener);
-      await this.releaseWakeLock();
+    // For non-iOS devices, check actual fullscreen state
+    if (!isIOS) {
+      const isCurrentlyFullScreen =
+        document.fullscreenElement === this.appRef.current;
+      this.setIsFullScreen(isCurrentlyFullScreen);
+
+      if (isCurrentlyFullScreen) {
+        await this.requestWakeLock();
+        await this.setLandscapeOrientation();
+        document.addEventListener("visibilitychange", this.wakeLockListener);
+      } else {
+        document.removeEventListener("visibilitychange", this.wakeLockListener);
+        await this.resetOrientation();
+        await this.releaseWakeLock();
+      }
     }
+    // For iOS, we're not triggering the fullscreenchange event,
+    // so this handler won't run automatically
   };
 
-  goFullScreen = () => {
+  exitIOSFullscreen() {
+    this.setIsFullScreen(false);
+    this.resetOrientation();
+  }
+
+  goFullScreen = async () => {
     if (this.appRef.current) {
-      if (this.appRef.current.requestFullscreen) {
+      // Check if already in fullscreen - if so, exit
+      if (this.isFullScreen) {
+        // For iOS, handle exiting our fake fullscreen
+        const isIOS =
+          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+          !(window as any).MSStream;
+        if (isIOS) {
+          this.exitIOSFullscreen();
+        } else if (document.exitFullscreen) {
+          // For other browsers, use standard API
+          document.exitFullscreen();
+        }
+        return;
+      }
+
+      // Detect iOS devices
+      const isIOS =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as any).MSStream;
+
+      if (isIOS) {
+        // For iOS, we can't use real fullscreen but we can fake it
         this.setIsFullScreen(true);
-        this.appRef.current.requestFullscreen();
+
+        // Force screen to landscape orientation
+        await this.setLandscapeOrientation();
+      } else if (this.appRef.current.requestFullscreen) {
+        // Standard fullscreen for other browsers
+        await this.appRef.current.requestFullscreen();
+        this.setIsFullScreen(true);
       }
 
       if (!this.isFullScreenChangeListenerAdded) {
         document.addEventListener(
           "fullscreenchange",
-          this.handleFullScreenChange
+          this.handleFullScreenChange,
         );
         this.isFullScreenChangeListenerAdded = true;
       }

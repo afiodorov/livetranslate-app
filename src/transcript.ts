@@ -32,7 +32,7 @@ export class Transcriber {
     setMsg: (msg: string) => void,
     deepgramToken: string,
     deeplToken: string,
-    useDeepLPro: boolean
+    useDeepLPro: boolean,
   ) {
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage || null;
@@ -112,7 +112,7 @@ export class Transcriber {
           targetLang,
           this.contextQueue.toArray().join(" "),
           this.deeplToken,
-          this.useDeepLPro
+          this.useDeepLPro,
         );
         if (translation) {
           this.setMsg(translation);
@@ -131,18 +131,57 @@ export class Transcriber {
       this.queue = new AsyncQueue();
     }
 
+    // Check if mediaDevices is supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      // Check if this is likely Safari on iOS
+      const isIOS =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as any).MSStream;
+
+      if (isIOS) {
+        this.setMsg(
+          "⚠️ iOS requires HTTPS for microphone access. Please use a secure connection.",
+        );
+      } else {
+        this.setMsg("⚠️ Your browser doesn't support microphone access");
+      }
+
+      return; // Exit without trying to access media
+    }
+
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints);
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`
+        // Handle common permission errors with user-friendly messages
+        if (
+          error.name === "NotAllowedError" ||
+          error.name === "PermissionDeniedError"
+        ) {
+          this.setMsg(
+            "⚠️ Microphone permission denied. Please allow microphone access.",
+          );
+        } else if (error.name === "NotFoundError") {
+          this.setMsg(
+            "⚠️ No microphone found. Please connect a microphone and try again.",
+          );
+        } else if (error.name === "NotReadableError") {
+          this.setMsg("⚠️ Microphone is in use by another application.");
+        } else {
+          this.setMsg(`⚠️ Microphone error: ${error.message}`);
+        }
+
+        console.error(`
           MediaDevices.getUserMedia() threw an error.
           Stream did not open.
           ${error.name} -
           ${error.message}
         `);
+        return; // Exit without proceeding further
       } else {
-        throw new Error("An unknown error occurred in getUserMedia");
+        this.setMsg("⚠️ An unknown error occurred accessing the microphone");
+        console.error("An unknown error occurred in getUserMedia");
+        return; // Exit without proceeding further
       }
     }
 
@@ -159,7 +198,7 @@ export class Transcriber {
 
     this._recorder.addEventListener(
       "dataavailable",
-      this.onDataAvailableHandler
+      this.onDataAvailableHandler,
     );
 
     this._ws.onmessage = this.onMessageHandler;
@@ -185,7 +224,7 @@ export class Transcriber {
     if (this._recorder) {
       this._recorder.removeEventListener(
         "dataavailable",
-        this.onDataAvailableHandler
+        this.onDataAvailableHandler,
       );
       this._recorder.stop();
       this._recorder = null;

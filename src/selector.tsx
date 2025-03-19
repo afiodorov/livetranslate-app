@@ -34,7 +34,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       <option key={code} value={code}>
         {name}
       </option>
-    )
+    ),
   );
 
   const targetLanguageOptions = targetOptions.map((code) => (

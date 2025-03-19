@@ -77,6 +77,14 @@
     padding: 10px; /* Adjust padding to ensure visibility */
     line-height: 1.2; /* Adjust line height for better readability */
   }
+
+  /* Make sure buttons are properly sized on mobile */
+  .App button {
+    display: inline-block;
+    font-size: 14px;
+    padding: 8px 12px;
+    margin: 5px;
+  }
 }
 
 .App label {
@@ -95,6 +103,23 @@
   margin: 8px;
 }
 
+.fullscreen-button {
+  display: inline-block !important;
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 15px !important;
+  font-size: 16px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  -webkit-appearance: none; /* Fix for iOS buttons */
+  appearance: none;
+}
+
 .App select {
   padding: 4px;
 }
@@ -108,6 +133,25 @@
   cursor: none;
   width: 100vw;
   height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+/* Exit button for iOS fake fullscreen */
+.exit-fullscreen-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .fullScreenText {
