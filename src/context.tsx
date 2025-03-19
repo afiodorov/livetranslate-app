@@ -19,7 +19,7 @@ export type ctx = {
     setMsg2: (_: string) => void,
     deepgramToken: string,
     deeplToken: string,
-    useDeepLPro: boolean
+    useDeepLPro: boolean,
   ) => void;
   stopStreaming: () => void;
 
@@ -62,7 +62,7 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
     setMsg2: (_: string) => void,
     deepgramToken: string,
     deeplToken: string,
-    useDeepLPro: boolean
+    useDeepLPro: boolean,
   ) => {
     if (active) {
       return;
@@ -74,7 +74,7 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
         setMsg,
         deepgramToken,
         deeplToken,
-        useDeepLPro
+        useDeepLPro,
       );
       setTranscriber(newTranscriber);
       newTranscriber.start();
@@ -87,7 +87,7 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
         setMsg2,
         deepgramToken,
         deeplToken,
-        useDeepLPro
+        useDeepLPro,
       );
       setTranscriber2(newTranscriber);
       newTranscriber.start();
@@ -123,7 +123,7 @@ export const StreamingProvider: React.FC<Props> = ({ children }) => {
     isFullScreen,
     setIsFullScreen,
     isFullScreenSupported,
-    setIsFullScreenSupported
+    setIsFullScreenSupported,
   );
 
   return (

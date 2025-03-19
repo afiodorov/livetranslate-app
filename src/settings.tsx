@@ -13,7 +13,7 @@ interface SettingsFormProps {
 export const useInit = (
   setDeepLToken: (_: string) => void,
   setDeepgramToken: (_: string) => void,
-  setUseDeepLPro: (_: boolean) => void
+  setUseDeepLPro: (_: boolean) => void,
 ) => {
   const [searchParams] = useSearchParams();
 

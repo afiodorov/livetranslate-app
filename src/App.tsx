@@ -4,6 +4,51 @@ import { ctx, StreamingContext } from "./context";
 import LanguageSelector from "./selector";
 import { SettingsForm, useInit } from "./settings";
 
+// Fullscreen component to handle fullscreen content
+const FullscreenContent = ({
+  isFullScreen,
+  speakerAdded,
+  msg,
+  msg2,
+  onExit,
+}: {
+  isFullScreen: boolean;
+  speakerAdded: boolean;
+  msg: string;
+  msg2: string;
+  onExit: () => void;
+}) => {
+  // Only show content when in fullscreen mode
+  if (!isFullScreen) return null;
+
+  // Check if we're on iOS (for special exit button)
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
+  return (
+    <div className="fullScreenDiv" style={{ display: "flex" }}>
+      {speakerAdded && <span className="fullScreenText">{msg2}</span>}
+      <span className="fullScreenText">{msg}</span>
+
+      {/* iOS-specific exit button */}
+      {isIOS && (
+        <button
+          className="exit-fullscreen-button"
+          onClick={onExit}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 1000,
+          }}
+        >
+          ❌ Exit
+        </button>
+      )}
+    </div>
+  );
+};
+
 function App() {
   const [msg, setMsg] = useState("...");
   const [msg2, setMsg2] = useState("...");
@@ -36,91 +81,116 @@ function App() {
 
   useInit(setDeepLToken, setDeepgramToken, setUseDeepLPro);
 
+  // Determine if we should show or hide UI based on fullscreen state
+  const showMainUI = !screenManager.isFullScreen;
+
   return (
     <div className="App">
-      <img src="logo.jpg" alt="LiveTranslate" />
-      <LanguageSelector
-        sourceLanguage={sourceLanguage}
-        setSourceLanguage={setSourceLanguage}
-        targetLanguage={targetLanguage}
-        setTargetLanguage={setTargetLanguage}
-        deeplToken={deeplToken}
-      />
-
-      {speakerAdded && (
-        <div style={{ margin: "8px" }}>
+      {/* Only show main UI when not in fullscreen */}
+      {showMainUI && (
+        <>
+          <img src="logo.jpg" alt="LiveTranslate" />
           <LanguageSelector
-            sourceLanguage={sourceLanguage2}
-            setSourceLanguage={setSourceLanguage2}
-            targetLanguage={targetLanguage2}
-            setTargetLanguage={setTargetLanguage2}
+            sourceLanguage={sourceLanguage}
+            setSourceLanguage={setSourceLanguage}
+            targetLanguage={targetLanguage}
+            setTargetLanguage={setTargetLanguage}
             deeplToken={deeplToken}
           />
-        </div>
+
+          {speakerAdded && (
+            <div style={{ margin: "8px" }}>
+              <LanguageSelector
+                sourceLanguage={sourceLanguage2}
+                setSourceLanguage={setSourceLanguage2}
+                targetLanguage={targetLanguage2}
+                setTargetLanguage={setTargetLanguage2}
+                deeplToken={deeplToken}
+              />
+            </div>
+          )}
+
+          {active ? (
+            <button
+              onClick={() => {
+                stopStreaming();
+                // Reset message displays after stopping
+                setMsg("...");
+                setMsg2("...");
+              }}
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                startStreaming(
+                  sourceLanguage,
+                  targetLanguage,
+                  setMsg,
+                  sourceLanguage2,
+                  targetLanguage2,
+                  setMsg2,
+                  deepgramToken,
+                  deeplToken,
+                  useDeepLPro,
+                )
+              }
+              disabled={!deepgramToken}
+            >
+              LiveTranslate 🎤
+            </button>
+          )}
+          {screenManager.isFullScreenSupported && (
+            <button
+              onClick={screenManager.goFullScreen}
+              className="fullscreen-button"
+            >
+              Fullscreen ⛶
+            </button>
+          )}
+          {speakerAdded ? (
+            <button onClick={() => setSpeakerAdded(false)} disabled={active}>
+              Remove Speaker 🧑
+            </button>
+          ) : (
+            <button onClick={() => setSpeakerAdded(true)} disabled={active}>
+              Add Speaker 🧑
+            </button>
+          )}
+          <button onClick={() => setSettingsShown(!settingsShown)}>
+            Settings ⚙️
+          </button>
+
+          {settingsShown && (
+            <SettingsForm
+              deeplToken={deeplToken}
+              setDeepLToken={setDeepLToken}
+              deepgramToken={deepgramToken}
+              setDeepgramToken={setDeepgramToken}
+              useDeepLPro={useDeepLPro}
+              setUseDeepLPro={setUseDeepLPro}
+            />
+          )}
+
+          {speakerAdded && <p className="sub-top">{msg2}</p>}
+          <p className="sub-bottom">{msg}</p>
+        </>
       )}
 
-      {active ? (
-        <button onClick={() => {
-          stopStreaming();
-          // Reset message displays after stopping
-          setMsg("...");
-          setMsg2("...");
-        }}>Stop</button>
-      ) : (
-        <button
-          onClick={() =>
-            startStreaming(
-              sourceLanguage,
-              targetLanguage,
-              setMsg,
-              sourceLanguage2,
-              targetLanguage2,
-              setMsg2,
-              deepgramToken,
-              deeplToken,
-              useDeepLPro
-            )
-          }
-          disabled={!deepgramToken}
-        >
-          LiveTranslate 🎤
-        </button>
-      )}
-      {screenManager.isFullScreenSupported && (
-        <button onClick={screenManager.goFullScreen} className="fullscreen-button">Fullscreen ⛶</button>
-      )}
-      {speakerAdded ? (
-        <button onClick={() => setSpeakerAdded(false)} disabled={active}>
-          Remove Speaker 🧑
-        </button>
-      ) : (
-        <button onClick={() => setSpeakerAdded(true)} disabled={active}>
-          Add Speaker 🧑
-        </button>
-      )}
-      <button onClick={() => setSettingsShown(!settingsShown)}>
-        Settings ⚙️
-      </button>
+      {/* Fullscreen content with React component */}
       <div
         ref={appRef}
-        style={{ display: screenManager.isFullScreen ? "flex" : "none" }}
-        className={screenManager.isFullScreen ? "fullScreenDiv" : ""}
+        style={{ display: screenManager.isFullScreen ? "block" : "none" }}
       >
-        {speakerAdded && <span className="fullScreenText">{screenManager.isFullScreen ? msg2 : ""}</span>}
-        <span className="fullScreenText">{screenManager.isFullScreen ? msg : ""}</span>
-      </div>
-      {settingsShown && (
-        <SettingsForm
-          deeplToken={deeplToken}
-          setDeepLToken={setDeepLToken}
-          deepgramToken={deepgramToken}
-          setDeepgramToken={setDeepgramToken}
-          useDeepLPro={useDeepLPro}
-          setUseDeepLPro={setUseDeepLPro}
+        <FullscreenContent
+          isFullScreen={screenManager.isFullScreen}
+          speakerAdded={speakerAdded}
+          msg={msg}
+          msg2={msg2}
+          onExit={() => screenManager.goFullScreen()}
         />
-      )}
-      {speakerAdded && <p className="sub-top">{msg2}</p>}
-      <p className="sub-bottom">{msg}</p>
+      </div>
     </div>
   );
 }

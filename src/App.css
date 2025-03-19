@@ -77,7 +77,7 @@
     padding: 10px; /* Adjust padding to ensure visibility */
     line-height: 1.2; /* Adjust line height for better readability */
   }
-  
+
   /* Make sure buttons are properly sized on mobile */
   .App button {
     display: inline-block;
@@ -109,13 +109,13 @@
   bottom: 100px;
   right: 20px;
   z-index: 1000;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 8px;
   padding: 15px !important;
   font-size: 16px !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   -webkit-appearance: none; /* Fix for iOS buttons */
   appearance: none;
 }
@@ -141,7 +141,7 @@
 
 /* Exit button for iOS fake fullscreen */
 .exit-fullscreen-button {
-  position: fixed;
+  position: absolute;
   top: 20px;
   right: 20px;
   z-index: 10000;
@@ -152,7 +152,6 @@
   padding: 10px 15px;
   font-size: 16px;
   cursor: pointer;
-  display: block !important;
 }
 
 .fullScreenText {

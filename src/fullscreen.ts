@@ -1,4 +1,5 @@
 import { RefObject } from "react";
+
 export class ScreenManager {
   private wakeLock: WakeLockSentinel | null = null;
   private isFullScreenChangeListenerAdded = false;
@@ -13,7 +14,7 @@ export class ScreenManager {
     isFullScreen: boolean,
     setIsFullScreen: (_: boolean) => void,
     isFullScreenSupported: boolean,
-    setIsFullScreenSupported: (_: boolean) => void
+    setIsFullScreenSupported: (_: boolean) => void,
   ) {
     this.isFullScreen = isFullScreen;
     this.setIsFullScreen = setIsFullScreen;
@@ -24,7 +25,7 @@ export class ScreenManager {
   // Detect if device is mobile (phone)
   isMobileDevice(): boolean {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
+      navigator.userAgent,
     );
   }
 
@@ -79,8 +80,9 @@ export class ScreenManager {
 
   handleFullScreenChange = async () => {
     // Detect iOS devices
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
     // For non-iOS devices, check actual fullscreen state
     if (!isIOS) {
       const isCurrentlyFullScreen =
@@ -95,83 +97,25 @@ export class ScreenManager {
         document.removeEventListener("visibilitychange", this.wakeLockListener);
         await this.resetOrientation();
         await this.releaseWakeLock();
-        
-        // Make sure fullscreen div is completely hidden when exiting fullscreen
-        if (this.appRef.current) {
-          this.appRef.current.style.display = "none";
-          
-          // Clear the fullscreen text placeholders
-          const fullscreenTextElements = document.querySelectorAll('.fullScreenText');
-          fullscreenTextElements.forEach(el => {
-            if (el instanceof HTMLElement) {
-              el.textContent = "";
-            }
-          });
-        }
-        
-        // Restore any elements that might have been hidden
-        document.querySelectorAll('body > *').forEach(el => {
-          if (el instanceof HTMLElement) el.style.display = '';
-        });
-        document.querySelectorAll('#root > div > *').forEach(el => {
-          if (el instanceof HTMLElement && !el.classList.contains('fullScreenDiv')) {
-            el.style.display = '';
-          }
-        });
-        
-        // Reset background
-        document.body.style.backgroundColor = '';
       }
     }
     // For iOS, we're not triggering the fullscreenchange event,
     // so this handler won't run automatically
   };
 
-  private exitIOSFullscreen() {
-    // Exit iOS fake fullscreen mode
+  exitIOSFullscreen() {
     this.setIsFullScreen(false);
     this.resetOrientation();
-    
-    // Hide the fullscreen div
-    if (this.appRef.current) {
-      this.appRef.current.style.display = "none";
-      
-      // Clear the fullscreen text placeholders
-      const fullscreenTextElements = document.querySelectorAll('.fullScreenText');
-      fullscreenTextElements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.textContent = "";
-        }
-      });
-      
-      // Remove any exit buttons that were added
-      const exitButtons = document.querySelectorAll('.exit-fullscreen-button');
-      exitButtons.forEach(button => button.remove());
-    }
-    
-    // Show all UI elements
-    document.querySelectorAll('.App > *').forEach(el => {
-      if (el instanceof HTMLElement && !el.classList.contains('fullScreenDiv')) {
-        el.style.display = '';
-      }
-    });
-    
-    // Show the fullscreen button
-    const fullscreenButton = document.querySelector('.fullscreen-button');
-    if (fullscreenButton instanceof HTMLElement) {
-      fullscreenButton.style.display = 'inline-block';
-    }
-    
-    // Reset background
-    document.body.style.backgroundColor = '';
   }
-  
+
   goFullScreen = async () => {
     if (this.appRef.current) {
       // Check if already in fullscreen - if so, exit
       if (this.isFullScreen) {
         // For iOS, handle exiting our fake fullscreen
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+        const isIOS =
+          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+          !(window as any).MSStream;
         if (isIOS) {
           this.exitIOSFullscreen();
         } else if (document.exitFullscreen) {
@@ -180,47 +124,28 @@ export class ScreenManager {
         }
         return;
       }
-      
+
       // Detect iOS devices
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-      
+      const isIOS =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as any).MSStream;
+
       if (isIOS) {
         // For iOS, we can't use real fullscreen but we can fake it
         this.setIsFullScreen(true);
-        
+
         // Force screen to landscape orientation
         await this.setLandscapeOrientation();
-        
-        // Add special styling for iOS
-        if (this.appRef.current) {
-          this.appRef.current.style.display = "flex";
-          this.appRef.current.className = "fullScreenDiv";
-          
-          // Create and add an exit button
-          const exitButton = document.createElement('button');
-          exitButton.textContent = '❌ Exit';
-          exitButton.className = 'exit-fullscreen-button';
-          exitButton.addEventListener('click', () => this.exitIOSFullscreen());
-          this.appRef.current.appendChild(exitButton);
-          
-          // Hide all other elements including the fullscreen button
-          document.querySelectorAll('.App > *:not(.fullScreenDiv)').forEach(el => {
-            if (el instanceof HTMLElement) el.style.display = 'none';
-          });
-          
-          // Make document background black
-          document.body.style.backgroundColor = 'black';
-        }
       } else if (this.appRef.current.requestFullscreen) {
         // Standard fullscreen for other browsers
-        this.setIsFullScreen(true);
         await this.appRef.current.requestFullscreen();
+        this.setIsFullScreen(true);
       }
 
       if (!this.isFullScreenChangeListenerAdded) {
         document.addEventListener(
           "fullscreenchange",
-          this.handleFullScreenChange
+          this.handleFullScreenChange,
         );
         this.isFullScreenChangeListenerAdded = true;
       }
