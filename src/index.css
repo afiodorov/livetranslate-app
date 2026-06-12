@@ -1,3 +1,17 @@
+:root {
+  --bg: #0e1014;
+  --surface: #181c24;
+  --surface-2: #212733;
+  --border: rgba(255, 255, 255, 0.09);
+  --text: #e9ecf2;
+  --text-dim: #98a0af;
+  --accent: #f0b429;
+  --accent-soft: rgba(240, 180, 41, 0.16);
+  --subtitle: #f5c542;
+  --radius: 12px;
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
 body {
   margin: 0;
   font-family:
@@ -5,6 +19,11 @@ body {
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1b2230 0%, transparent 60%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
 }
 
 code {

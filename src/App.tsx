@@ -112,6 +112,7 @@ function App() {
 
           {active ? (
             <button
+              className="primary"
               onClick={() => {
                 stopStreaming();
                 // Reset message displays after stopping
@@ -123,6 +124,7 @@ function App() {
             </button>
           ) : (
             <button
+              className="primary"
               onClick={() =>
                 startStreaming(
                   sourceLanguage,

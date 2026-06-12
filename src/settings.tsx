@@ -50,21 +50,18 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="settings-form" onSubmit={handleSubmit}>
       <label>
         Deepgram API Key
         <input
-          style={{ margin: "8px" }}
           type="text"
           value={deepgramToken}
           onChange={(e) => setDeepgramToken(e.target.value)}
         />
       </label>
-      <br />
       <label>
         DeepL API Key
         <input
-          style={{ margin: "8px" }}
           type="text"
           value={deeplToken}
           onChange={(e) => setDeepLToken(e.target.value)}
@@ -78,7 +75,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
           onChange={(e) => setUseDeepLPro(e.target.checked)}
         />
       </label>
-      <br />
       <button type="submit">Save 💾</button>
     </form>
   );
